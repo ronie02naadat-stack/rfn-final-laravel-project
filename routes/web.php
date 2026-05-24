@@ -14,7 +14,7 @@ use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 
-Route::get('/log', function () {
+Route::get('/', function () {
     if (auth()->check()) {
         $user = auth()->user();
         if ($user->user_type === 'admin') {
@@ -94,4 +94,3 @@ Route::prefix('maintenance')->name('maintenance.')->middleware('auth')->controll
     Route::post('/{id}/deactivate', 'deactivate')->name('deactivate');
     Route::delete('/{id}', 'destroy')->name('destroy');
 });
-Route::get('/', [AuthController::class, 'index']);
