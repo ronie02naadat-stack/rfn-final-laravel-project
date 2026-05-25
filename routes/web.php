@@ -13,6 +13,50 @@ use App\Http\Controllers\Auth\PasswordChangeController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
+Route::get('/setup-admin', function () {
+    try {
+        // Test database connection
+        DB::connection()->getPdo();
+        $dbConnected = 'Database connected successfully.';
+    } catch (\Exception $e) {
+        return 'Database connection error: ' . $e->getMessage();
+    }
+
+    // Check if users table exists and count users
+    try {
+        $userCount = User::count();
+        $users = User::all(['id', 'name', 'email']);
+    } catch (\Exception $e) {
+        return 'Users table error: ' . $e->getMessage();
+    }
+
+    // Create or update admin user
+    try {
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('admin123'),
+            ]
+        );
+        $adminCreated = 'Admin user created/updated successfully.';
+    } catch (\Exception $e) {
+        $adminCreated = 'Error creating admin: ' . $e->getMessage();
+    }
+
+    return response()->json([
+        'db_connection' => $dbConnected,
+        'user_count' => $userCount,
+        'users' => $users,
+        'admin_action' => $adminCreated,
+        'admin_email' => 'admin@example.com',
+        'admin_password' => 'admin123'
+    ]);
+});
 
 Route::get('/', function () {
     if (auth()->check()) {
