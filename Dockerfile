@@ -16,6 +16,10 @@ RUN cp .env.example .env
 
 RUN php artisan key:generate
 
+# 👇 THESE TWO LINES MUST BE PRESENT
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 EXPOSE 10000
 
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
