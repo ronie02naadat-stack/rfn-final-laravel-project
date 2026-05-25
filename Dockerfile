@@ -1,8 +1,8 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
-    git unzip curl libzip-dev zip libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+    git unzip curl libzip-dev zip libpng-dev \
+    && docker-php-ext-install pdo pdo_mysql zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -12,16 +12,10 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN cp .env.example .env || true
+RUN cp .env.example .env
 
-RUN php artisan key:generate || true
+RUN php artisan key:generate
 
-RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views
+EXPOSE 10000
 
-RUN chown -R www-data:www-data /var/www
-
-RUN chmod -R 775 storage bootstrap/cache
-
-EXPOSE 8000
-
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
