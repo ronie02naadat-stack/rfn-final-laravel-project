@@ -17,6 +17,56 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
+Route::get('/fix-admin-role', function () {
+    // Get the admin user
+    $admin = User::where('email', 'admin@example.com')->first();
+    
+    if (!$admin) {
+        return "Admin user not found. Please create one first using /create-admin";
+    }
+    
+    // Show current attributes (excluding password for security)
+    $data = $admin->toArray();
+    unset($data['password']);
+    
+    // Determine which columns exist in the users table
+    $columns = DB::getSchemaBuilder()->getColumnListing('users');
+    
+    // Common role column names
+    $roleColumns = ['role', 'user_role', 'is_admin', 'user_type', 'type', 'level'];
+    $existingRoleCols = array_intersect($roleColumns, $columns);
+    
+    // Update role if needed (assuming 'role' column exists; change based on your schema)
+    if (in_array('role', $columns)) {
+        $admin->role = 'admin';
+        $admin->save();
+        $updated = "Updated role column to 'admin'.";
+    } elseif (in_array('is_admin', $columns)) {
+        $admin->is_admin = true;
+        $admin->save();
+        $updated = "Updated is_admin to true.";
+    } elseif (in_array('user_type', $columns)) {
+        $admin->user_type = 'admin';
+        $admin->save();
+        $updated = "Updated user_type to 'admin'.";
+    } else {
+        $updated = "No recognized role column found. Available columns: " . implode(', ', $columns);
+    }
+    
+    // Fetch updated admin
+    $updatedAdmin = User::where('email', 'admin@example.com')->first();
+    $updatedData = $updatedAdmin->toArray();
+    unset($updatedData['password']);
+    
+    return response()->json([
+        'original_admin_data' => $data,
+        'available_columns' => $columns,
+        'action_taken' => $updated,
+        'updated_admin_data' => $updatedData,
+        'suggested_login_credentials' => ['email' => 'admin@example.com', 'password' => 'admin123']
+    ]);
+});
+
 // Temporary admin creator – remove after use
 Route::get('/create-admin', function () {
     try {
