@@ -28,4 +28,6 @@ RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 10000
 
+RUN php artisan optimize:clear
+
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT

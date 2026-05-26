@@ -17,6 +17,25 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
+// Temporary admin creator – remove after use
+Route::get('/create-admin', function () {
+    try {
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('admin123'),
+                // Add any extra fields your users table has, e.g.:
+                // 'is_admin' => true,
+                // 'email_verified_at' => now(),
+            ]
+        );
+        return '✅ Admin user created successfully.<br>Email: admin@example.com<br>Password: admin123<br><a href="/login">Go to Login</a>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
 Route::get('/setup-admin', function () {
     try {
         // Test database connection
