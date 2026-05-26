@@ -16,6 +16,9 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])
+    ->name('admin.dashboard')
+    ->middleware('auth');
 
 Route::get('/fix-admin-role', function () {
     // Get the admin user

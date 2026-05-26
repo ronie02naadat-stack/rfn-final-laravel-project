@@ -30,4 +30,6 @@ EXPOSE 10000
 
 RUN php artisan optimize:clear
 
+RUN php artisan route:clear
+
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
