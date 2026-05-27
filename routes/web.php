@@ -16,6 +16,83 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Models\Degree;
+use App\Models\Course;
+
+Route::get('/seed-data', function () {
+    // 1. Create degrees
+    $bsit = Degree::updateOrCreate(
+        ['name' => 'Bachelor of Science in Information Technology'],
+        ['name' => 'Bachelor of Science in Information Technology']
+    );
+    
+    $cs = Degree::updateOrCreate(
+        ['name' => 'Bachelor of Science in Computer Science'],
+        ['name' => 'Bachelor of Science in Computer Science']
+    );
+    
+    $is = Degree::updateOrCreate(
+        ['name' => 'Bachelor of Science in Information Systems'],
+        ['name' => 'Bachelor of Science in Information Systems']
+    );
+
+    // 2. Create courses for BSIT
+    $bsitCourses = [
+        ['name' => 'Web Development', 'description' => 'HTML, CSS, JavaScript, Laravel'],
+        ['name' => 'Database Management', 'description' => 'MySQL, SQL queries, database design'],
+        ['name' => 'Networking', 'description' => 'Network fundamentals, OSI model, routing'],
+        ['name' => 'Object-Oriented Programming', 'description' => 'Java, OOP concepts'],
+    ];
+    
+    foreach ($bsitCourses as $course) {
+        Course::updateOrCreate(
+            ['name' => $course['name'], 'degree_id' => $bsit->id],
+            [
+                'description' => $course['description'],
+                'degree_id' => $bsit->id,
+            ]
+        );
+    }
+
+    // 3. Create courses for BSCS
+    $csCourses = [
+        ['name' => 'Data Structures', 'description' => 'Algorithms, trees, graphs'],
+        ['name' => 'Theory of Computation', 'description' => 'Automata, complexity'],
+        ['name' => 'Artificial Intelligence', 'description' => 'Machine learning basics'],
+    ];
+    
+    foreach ($csCourses as $course) {
+        Course::updateOrCreate(
+            ['name' => $course['name'], 'degree_id' => $cs->id],
+            [
+                'description' => $course['description'],
+                'degree_id' => $cs->id,
+            ]
+        );
+    }
+
+    // 4. Create courses for BSIS
+    $isCourses = [
+        ['name' => 'Business Process Management', 'description' => 'Workflow optimization'],
+        ['name' => 'Enterprise Architecture', 'description' => 'IT strategy'],
+        ['name' => 'Systems Analysis', 'description' => 'Requirement gathering'],
+    ];
+    
+    foreach ($isCourses as $course) {
+        Course::updateOrCreate(
+            ['name' => $course['name'], 'degree_id' => $is->id],
+            [
+                'description' => $course['description'],
+                'degree_id' => $is->id,
+            ]
+        );
+    }
+
+    return response()->json([
+        'message' => 'Degrees and courses seeded successfully!',
+        'degrees' => Degree::with('courses')->get()
+    ]);
+});
 Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])
     ->name('admin.dashboard')
     ->middleware('auth');
