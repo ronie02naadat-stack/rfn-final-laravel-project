@@ -42,77 +42,130 @@ use App\Models\Degree;
 use App\Models\Course;
 
 Route::get('/seed-data', function () {
-    // 1. Create degrees
+    // 1. Create degrees with correct column names
     $bsit = Degree::updateOrCreate(
-        ['name' => 'Bachelor of Science in Information Technology'],
-        ['name' => 'Bachelor of Science in Information Technology']
+        ['degree_title' => 'Bachelor of Science in Information Technology'],
+        [
+            'degree_title' => 'Bachelor of Science in Information Technology',
+            'degree_code' => 'BSIT',
+            'description' => 'Focuses on web development, networking, and database management.'
+        ]
     );
     
     $cs = Degree::updateOrCreate(
-        ['name' => 'Bachelor of Science in Computer Science'],
-        ['name' => 'Bachelor of Science in Computer Science']
+        ['degree_title' => 'Bachelor of Science in Computer Science'],
+        [
+            'degree_title' => 'Bachelor of Science in Computer Science',
+            'degree_code' => 'BSCS',
+            'description' => 'Focuses on algorithms, programming paradigms, and software development.'
+        ]
     );
     
     $is = Degree::updateOrCreate(
-        ['name' => 'Bachelor of Science in Information Systems'],
-        ['name' => 'Bachelor of Science in Information Systems']
+        ['degree_title' => 'Bachelor of Science in Information Systems'],
+        [
+            'degree_title' => 'Bachelor of Science in Information Systems',
+            'degree_code' => 'BSIS',
+            'description' => 'Focuses on business processes, IT project management, and systems analysis.'
+        ]
     );
 
-    // 2. Create courses for BSIT
+    // 2. Create courses for BSIT (using correct column names)
     $bsitCourses = [
-        ['name' => 'Web Development', 'description' => 'HTML, CSS, JavaScript, Laravel'],
-        ['name' => 'Database Management', 'description' => 'MySQL, SQL queries, database design'],
-        ['name' => 'Networking', 'description' => 'Network fundamentals, OSI model, routing'],
-        ['name' => 'Object-Oriented Programming', 'description' => 'Java, OOP concepts'],
+        [
+            'course_name' => 'Web Development',
+            'code' => 'IT 301',
+            'description' => 'HTML, CSS, JavaScript, Laravel framework',
+            'degree_id' => $bsit->id
+        ],
+        [
+            'course_name' => 'Database Management',
+            'code' => 'IT 202',
+            'description' => 'MySQL, SQL queries, database design and normalization',
+            'degree_id' => $bsit->id
+        ],
+        [
+            'course_name' => 'Networking',
+            'code' => 'IT 203',
+            'description' => 'Network fundamentals, OSI model, routing and switching',
+            'degree_id' => $bsit->id
+        ],
+        [
+            'course_name' => 'Object-Oriented Programming',
+            'code' => 'IT 104',
+            'description' => 'Java, OOP concepts, inheritance, polymorphism',
+            'degree_id' => $bsit->id
+        ],
     ];
     
     foreach ($bsitCourses as $course) {
         Course::updateOrCreate(
-            ['name' => $course['name'], 'degree_id' => $bsit->id],
-            [
-                'description' => $course['description'],
-                'degree_id' => $bsit->id,
-            ]
+            ['course_name' => $course['course_name'], 'degree_id' => $course['degree_id']],
+            $course
         );
     }
 
     // 3. Create courses for BSCS
     $csCourses = [
-        ['name' => 'Data Structures', 'description' => 'Algorithms, trees, graphs'],
-        ['name' => 'Theory of Computation', 'description' => 'Automata, complexity'],
-        ['name' => 'Artificial Intelligence', 'description' => 'Machine learning basics'],
+        [
+            'course_name' => 'Data Structures',
+            'code' => 'CS 301',
+            'description' => 'Algorithms, trees, graphs, hash tables',
+            'degree_id' => $cs->id
+        ],
+        [
+            'course_name' => 'Theory of Computation',
+            'code' => 'CS 401',
+            'description' => 'Automata theory, complexity classes, Turing machines',
+            'degree_id' => $cs->id
+        ],
+        [
+            'course_name' => 'Artificial Intelligence',
+            'code' => 'CS 402',
+            'description' => 'Machine learning basics, neural networks, NLP',
+            'degree_id' => $cs->id
+        ],
     ];
     
     foreach ($csCourses as $course) {
         Course::updateOrCreate(
-            ['name' => $course['name'], 'degree_id' => $cs->id],
-            [
-                'description' => $course['description'],
-                'degree_id' => $cs->id,
-            ]
+            ['course_name' => $course['course_name'], 'degree_id' => $course['degree_id']],
+            $course
         );
     }
 
     // 4. Create courses for BSIS
     $isCourses = [
-        ['name' => 'Business Process Management', 'description' => 'Workflow optimization'],
-        ['name' => 'Enterprise Architecture', 'description' => 'IT strategy'],
-        ['name' => 'Systems Analysis', 'description' => 'Requirement gathering'],
+        [
+            'course_name' => 'Business Process Management',
+            'code' => 'IS 301',
+            'description' => 'Workflow optimization, BPMN, process mining',
+            'degree_id' => $is->id
+        ],
+        [
+            'course_name' => 'Enterprise Architecture',
+            'code' => 'IS 302',
+            'description' => 'IT strategy, TOGAF, Zachman framework',
+            'degree_id' => $is->id
+        ],
+        [
+            'course_name' => 'Systems Analysis',
+            'code' => 'IS 203',
+            'description' => 'Requirement gathering, UML, SDLC',
+            'degree_id' => $is->id
+        ],
     ];
     
     foreach ($isCourses as $course) {
         Course::updateOrCreate(
-            ['name' => $course['name'], 'degree_id' => $is->id],
-            [
-                'description' => $course['description'],
-                'degree_id' => $is->id,
-            ]
+            ['course_name' => $course['course_name'], 'degree_id' => $course['degree_id']],
+            $course
         );
     }
 
     return response()->json([
         'message' => 'Degrees and courses seeded successfully!',
-        'degrees' => Degree::with('courses')->get()
+        'degrees' => Degree::with('courses')->get(['id', 'degree_title', 'degree_code']),
     ]);
 });
 Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])
