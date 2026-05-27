@@ -27,9 +27,10 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 RUN chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 10000
-
+RUN php artisan config:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
 RUN php artisan optimize:clear
 
-RUN php artisan route:clear
 
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
