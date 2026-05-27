@@ -17,6 +17,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+// TEMPORARY FALLBACK – WILL SHOW DATABASE SCHEMA
+Route::fallback(function () {
+    $degreesColumns = Schema::getColumnListing('degrees');
+    $coursesColumns = Schema::getColumnListing('courses');
+    return response()->json([
+        'degrees_columns' => $degreesColumns,
+        'courses_columns' => $coursesColumns,
+    ]);
+});
 
 Route::get('/check-schema', function () {
     // Get columns of degrees table
