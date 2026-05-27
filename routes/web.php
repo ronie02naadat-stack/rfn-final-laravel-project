@@ -16,6 +16,19 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+Route::get('/check-schema', function () {
+    // Get columns of degrees table
+    $degreesColumns = Schema::getColumnListing('degrees');
+    // Get columns of courses table
+    $coursesColumns = Schema::getColumnListing('courses');
+    
+    return response()->json([
+        'degrees_table_columns' => $degreesColumns,
+        'courses_table_columns' => $coursesColumns,
+    ]);
+});
 use App\Models\Degree;
 use App\Models\Course;
 
